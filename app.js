@@ -28,6 +28,7 @@ export const server = Server(app);
    ============================================= */
 
 /* ----------  Views  ---------- */
+app.set('view engine', 'ejs');
 
 /* ----------  Static Assets  ---------- */
 

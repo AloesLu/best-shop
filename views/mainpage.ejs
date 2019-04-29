@@ -1,32 +1,44 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Shopping List</title>
+    <title>Welcome TZ</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-    <script src="/bundle.js"></script>
   </head>
   <body>
-    <div id="content"></div>
+    <div id="content">
+        <p id="tidLabel"></p>
+        <p id="thread_typeLabel"></p>
+        <p id="psidLabel"></p>
+        <p id="signed_requestLabel"></p>
+    </div>
     <script>
-    <% if (demo) { %>
-      // Use a random demo ID when viewing locally.
-      const userId = Math.floor(Math.random() * 4) + 1;
-      window.attachApp(userId, <%= listId %>, "<%= socketAddress %>");
-    <% } else if (listId) { %>
-      window.extAsyncInit = function() {
+    window.extAsyncInit = function() {
         MessengerExtensions.getContext(
           '2115222508797948',
           function success(context) {
-            window.attachApp(
-              context.psid,
-              <%= listId %>,
-              "<%= socketAddress %>",
-              context.thread_type);
+            document.getElementById("tidLabel").innerText = "tid:" + context.tid;
+            document.getElementById("thread_typeLabel").innerText = "thread_type:" + context.thread_type;
+            document.getElementById("psidLabel").innerText = "psid:" + context.psid;
+            document.getElementById("signed_requestLabel").innerText = "signed_request:" + context.signed_request;
+            console.log("成功");
           }, function error(err) {
-            window.attachApp();
-          });
+            console.log("失败" + err);
+        });
+        MessengerExtensions.askPermission(
+            function(permission_response) {
+            // Person grants or rejects the asked permission.
+            let permissions = permission_response.permissions; // list of all permissions granted
+            let isGranted = permission_response.isGranted;
+
+            if (isGranted) {
+                console.log("授权成功");
+            }
+    
+        }, function(errorCode, errorMessage) {
+            console.log("授权失败"+errorMessage);
+        },"user_profile"
+        );
       };
-    <% } %>
       (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) {return;}

@@ -1,8 +1,9 @@
 /**
- * Copyright 2017-present, AloesLu. All rights reserved.
- *
  * Best Shop
+ * 
  * webhooks.js
+ * 
+ * Copyright 2019-present, AloesLu. All rights reserved.
  */
 
 // ===== MODULES ===============================================================
@@ -68,10 +69,10 @@ router.post('/', (req, res) => {
 
         if (messagingEvent.message) {
           receiveApi.handleReceiveMessage(messagingEvent);
-        }
-
-        if (messagingEvent.postback) {
+        } else if (messagingEvent.postback) {
           receiveApi.handleReceivePostback(messagingEvent);
+        } else if (messagingEvent.referral) {
+          receiveApi.handleReceiveReferral(messagingEvent);
         } else {
           console.log(
             'Webhook received unknown messagingEvent: ',

@@ -1,10 +1,10 @@
 /**
- * Copyright 2017-present, AloesLu. All rights reserved.
- *
  * Best Shop
+ * 
  * app.js
+ * 
+ * Copyright 2019-present, AloesLu. All rights reserved.
  */
-
 // ===== MODULES ===============================================================
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -12,7 +12,7 @@ import express from 'express';
 import {Server} from 'http';
 
 // ===== ROUTES ================================================================
-// import index from './routes/index';
+import index from './routes/index';
 // import lists from './routes/lists';
 import webhooks from './routes/webhooks';
 
@@ -54,6 +54,7 @@ app.use(cookieParser());
 
 /* ----------  Primary / Happy Path  ---------- */
 app.use('/webhook', webhooks);
+app.use('/', index);
 
 /* ----------  Errors  ---------- */
 

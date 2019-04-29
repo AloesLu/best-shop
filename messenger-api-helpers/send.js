@@ -1,8 +1,9 @@
 /**
- * Copyright 2017-present, Facebook, Inc. All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
+ * Best Shop
+ * 
+ * send.js
+ * 
+ * Copyright 2019-present, AloesLu. All rights reserved.
  */
 
 // ===== LODASH ================================================================
@@ -14,24 +15,38 @@ import api from './api';
 
 const {APP_URL} = process.env;
 
-// Turns typing indicator on.
+/**
+ * sender_action（发送者操作状态）
+ * https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions 
+ */ 
+//开始输入提示
 const typingOn = (recipientId) => {
   return {
     recipient: {
       id: recipientId,
     },
-    sender_action: 'typing_on', // eslint-disable-line camelcase
+    sender_action: 'typing_on',
   };
 };
-
-// Turns typing indicator off.
+//关闭输入提示
 const typingOff = (recipientId) => {
   return {
     recipient: {
       id: recipientId,
     },
-    sender_action: 'typing_off', // eslint-disable-line camelcase
+    sender_action: 'typing_off',
   };
+};
+//将上一条消息标记已读
+const sendReadReceipt = (recipientId) => {
+  const messageData = {
+    recipient: {
+      id: recipientId,
+    },
+    sender_action: 'mark_seen',
+  };
+
+  api.callMessagesAPI(messageData);
 };
 
 // Wraps a message JSON object with recipient information.
@@ -56,78 +71,13 @@ const sendMessage = (recipientId, messagePayloads) => {
   ]);
 };
 
-// Send a read receipt to indicate the message has been read
-const sendReadReceipt = (recipientId) => {
-  const messageData = {
-    recipient: {
-      id: recipientId,
-    },
-    sender_action: 'mark_seen', // eslint-disable-line camelcase
-  };
-
-  api.callMessagesAPI(messageData);
-};
-
 // Send the initial message welcoming & describing the bot.
 const sendWelcomeMessage = (recipientId) => {
   sendMessage(recipientId, messages.welcomeMessage(APP_URL));
 };
 
-// Let the user know that they don't have any lists yet.
-const sendNoListsYet = (recipientId) => {
-  sendMessage(recipientId, messages.noListsMessage(APP_URL));
-};
-
-// Show user the lists they are associated with.
-const sendLists = (recipientId, action, lists, offset) => {
-  // Show different responses based on number of lists.
-  switch (lists.length) {
-  case 0:
-    // Tell User they have no lists.
-    sendNoListsYet(recipientId);
-    break;
-  case 1:
-    // Show a single list — List view templates require
-    // a minimum of 2 Elements. Rease More at:
-    // https://developers.facebook.com/docs/
-    // messenger-platform/send-api-reference/list-template
-    const {id, title} = lists[0];
-
-    sendMessage(
-      recipientId,
-      messages.shareListMessage(APP_URL, id, title, 'Open List'),
-    );
-
-    break;
-  default:
-    // Show a paginated set of lists — List view templates require
-    // a maximum of 4 Elements. Rease More at:
-    // https://developers.facebook.com/docs/
-    // messenger-platform/send-api-reference/list-template
-    sendMessage(
-      recipientId,
-      messages.paginatedListsMessage(APP_URL, action, lists, offset)
-    );
-
-    break;
-  }
-};
-
-// Send a message notifying the user their list has been created.
-const sendListCreated = (recipientId, listId, title) => {
-  sendMessage(
-    recipientId,
-    [
-      messages.listCreatedMessage,
-      messages.shareListMessage(APP_URL, listId, title, 'Open List'),
-    ]);
-};
-
 export default {
-  sendListCreated,
-  sendLists,
   sendMessage,
-  sendNoListsYet,
   sendReadReceipt,
   sendWelcomeMessage,
 };
